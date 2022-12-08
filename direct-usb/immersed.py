@@ -20,7 +20,10 @@ ADB_BIN = '/Users/brandon/platform-tools/adb'
 IMMERSED_APP = '/Applications/Immersed.app'
 IMMERSED_PLIST = os.path.expanduser('~/Library/Preferences/team.Immersed.plist')
 
-
+# For finding IP addresses in ifconfig output.
+ip_re = re.compile(r'inet 192.168.50.36/24 brd 192.168.50.255')
+broadcast_re = re.compile(r'inet ((?:[0-9]{1,3}\.?){4})\/[1-9]{1,2} brd ((?:[0-9]{1,3}\.?){4})', re.M)
+    
 class Problem(Exception):
     pass
 
@@ -157,8 +160,6 @@ def get_quest_ip():
     """ Get the quest IP and broadcast ip. """
     output = adb('shell ip addr show wlan0'.split(), query=True)
 
-    ip_re = re.compile(r'inet 192.168.50.36/24 brd 192.168.50.255')
-    broadcast_re = re.compile(r'inet ((?:[0-9]{1,3}\.?){4})\/[1-9]{1,2} brd ((?:[0-9]{1,3}\.?){4})', re.M)
     result = broadcast_re.findall(output)
     if not result:
         raise Problem("No broadcast IP. Quest might not be on!: {}".format(output))
